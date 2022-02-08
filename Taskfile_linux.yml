@@ -1,0 +1,40 @@
+# https://taskfile.dev
+
+version: '3'
+
+
+tasks:
+  # Cross compiling with Go is designed to be simple -
+  # GOOS for the target Operating System
+  # GOARCH if targeting a different architecture
+  # CGO_ENABLED=1 which tells go to enable the C compiler
+  # CC environment variable to tell Go which compiler to use.
+  build:linux:
+    desc: build for linux
+    deps:
+      - mkdir
+    env:
+      GOOS: linux
+      GOARCH: amd64
+      CC: gcc
+      CGO_ENABLED: 1
+    cmds:
+      - go build -o {{.BIN}}/{{.CLI}}
+
+  build:windows:
+    desc: build for windows
+    deps:
+      - mkdir
+    env:
+      GOOS: windows
+      GOARCH: amd64
+      CC: x86_64-w64-mingw32-gcc
+      CGO_ENABLED: 1
+    cmds:
+      - env GOOS=windows GOARCH=amd64 go build -o {{.BIN}}/{{.CLI}}.exe
+
+  mkdir:
+    desc: make bin dir
+    run: once
+    cmds:
+      - mkdir -p {{.BIN}}

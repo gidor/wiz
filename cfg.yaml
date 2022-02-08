@@ -1,0 +1,110 @@
+title: wizzard
+panels:
+  - title: test
+    action: 
+      execute: task {{.dir}} {{.select}} {{.text}} {{.dir}} {{.file}} 
+    form:
+      -
+        name: text
+        label: text
+        type: text
+        value: prova
+      -
+        name: file
+        type: file
+        value: 
+      -
+        name: dir
+        type: dir
+        value: .
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+      
+  - title: test1
+    action: 
+      execute: task {{.dir}} {{.select}} {{.text}} {{.dir}} {{.file}} 
+    form:
+      -
+        name: text
+        label: text
+        type: text
+        value: prova
+      -
+        name: file
+        type: file
+        value: 
+      -
+        name: dir
+        type: dir
+        value: .
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+      
+  - title: test2
+    action: 
+      execute: task {{.dir}} {{.select}} {{.text}} {{.dir}} {{.file}} 
+    form:
+      -
+        name: text
+        label: text
+        type: text
+        value: prova
+      -
+        name: file
+        type: file
+        value: 
+      -
+        name: dir
+        type: dir
+        value: .
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+      
+  - title: test3
+    action: 
+      execute: task {{.dir}} {{.select}} {{.text}} {{.dir}} {{.file}} 
+    form:
+      -
+        name: text
+        label: text
+        type: text
+        value: prova
+      -
+        name: file
+        type: file
+        value: 
+      -
+        name: dir
+        type: dir
+        value: .
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+        

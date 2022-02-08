@@ -1,0 +1,59 @@
+# https://taskfile.dev
+
+version: '3'
+includes:
+  site: ./Taskfile_{{OS}}.yml
+# output: prefixed
+vars:
+  FOO: bar
+  GREETING: Hello, World!
+  BIN: ./bin
+  SRC: '*.go'
+  CLI: wiz
+# env:
+#   BAR: baz
+
+
+tasks:
+  # Cross compiling with Go is designed to be simple -
+  # GOOS for the target Operating System
+  # GOARCH if targeting a different architecture
+  # CGO_ENABLED=1 which tells go to enable the C compiler
+  # CC environment variable to tell Go which compiler to use.
+
+  build:
+    desc: build and cross compiles
+    deps:
+      - site:build:windows
+      - site:build:linux
+
+  fmt:
+    cmds:
+      - gofmt -l {{.SRC}} || (gofmt -d $(SRC); exit 1)
+
+  lint:
+    cmds:
+      - golangci-lint run -v
+
+  test:
+    deps:
+      - install_deps
+      - lint
+    cmds:
+      - richgo test -v ./...
+
+  install_deps:
+    cmds:
+      - go get -v ./...
+
+  clean:
+    cmds:
+      - rm -rf {{.BIN}}
+
+  default:
+    cmds:
+      - task -l
+      # - echo "{{.GREETING}}"
+    # silent: false
+
+
