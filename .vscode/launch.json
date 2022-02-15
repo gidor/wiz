@@ -10,7 +10,8 @@
             "request": "launch",
             "mode": "auto",
             // "program": "${fileDirname}"
-            "program": "${workspaceFolder}/wiz.go"
+            "program": "${workspaceFolder}/wiz.go",
+            "args": ["-d","test"]
         }
     ]
 }

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+
 package cfg
 
 import (
@@ -23,24 +24,42 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
-	// "fyne.io/fyne/v2/widget"
 )
-
-type Action struct {
-	Execute string `yaml:"execute"`
-}
 
 // action:
 //   execute: task {{.dir}} {{.select}} {{.text}} {{.dir}} {{.file}}
 // form:
 
 type Form struct {
-	Title   string  `yaml:"title"`
-	Visible string  `yaml:"public"`
-	Todo    Action  `yaml:"action"`
-	Items   []*Item `yaml:"form,flow"`
-	public  bool
-	cfg     *Cfg
+	Title  string  `yaml:"title"`
+	Items  []*Item `yaml:"form,flow"`
+	public bool
+	cfg    *Cfg
+}
+
+func (f *Form) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var dy struct {
+		Title   string  `yaml:"title"`
+		Visible string  `yaml:"public"`
+		Items   []*Item `yaml:"form,flow"`
+	}
+	if err := unmarshal(&dy); err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	f.Title = dy.Title
+	switch strings.ToLower(dy.Visible) {
+	case "yes":
+		f.public = true
+	case "no":
+		f.public = false
+	default:
+		f.public = true
+	}
+
+	f.Items = dy.Items
+
+	return nil
 }
 
 // get the menuitem that will diplay the panell
@@ -53,7 +72,7 @@ func (f *Form) MenuItem() (*fyne.MenuItem, error) {
 	}
 }
 
-// rendere the form
+// render the form
 func (f *Form) render() {
 	objs := make([]fyne.CanvasObject, 0, (len(f.Items)+1)*2)
 	// collect form widget
@@ -61,13 +80,9 @@ func (f *Form) render() {
 		label, content := item.widgets()
 		objs = append(objs, label, content)
 	}
+	// objs = append(objs, widget.NewButton(f.Todo.Title, f.execute))
 	form := container.New(layout.NewFormLayout(), objs...)
 	f.cfg.win.SetContent(form)
-
-}
-
-// execute the form
-func (f *Form) execute() {
 
 }
 
@@ -77,16 +92,7 @@ func (f *Form) HasMenu() bool {
 
 func (f *Form) defaults(c *Cfg) {
 	f.cfg = c
-	switch strings.ToLower(f.Visible) {
-	case "yes":
-		f.public = true
-	case "no":
-		f.public = false
-	default:
-		f.public = true
-	}
 	for _, item := range f.Items {
 		item.defaults(c)
-
 	}
 }

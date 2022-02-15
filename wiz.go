@@ -18,10 +18,9 @@ limitations under the License.
 package main
 
 import (
-	"github.com/gidor/wiz/pkg/cfg"
+	"github.com/gidor/wiz/cmd"
 )
 
 func main() {
-	cfg := cfg.GetCfg("cfg.yaml")
-	cfg.Start()
+	cmd.Start()
 }

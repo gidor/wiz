@@ -14,36 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package gui
+package cfg
 
-import (
-	"fmt"
+import "fmt"
 
-	"fyne.io/fyne/v2"
-	"github.com/gidor/wiz/pkg/cfg"
-
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-)
-
-var (
-	wizApp  fyne.App
-	wizWin  fyne.Window
-	wizTabs container.AppTabs
-)
-
-func Setup(c *cfg.Cfg) {
-	wizApp = app.New()
-	wizWin = wizApp.NewWindow("Hello")
-	//.SetContent(widget.NewLabel("Hello"))
-
+type Action struct {
+	Title      string
+	Execute    string
+	Goto       string
+	Collectall bool
 }
 
-func Start() {
-	wizWin.Show()
-	wizApp.Run()
-	tidyUp()
-}
-func tidyUp() {
-	fmt.Println("Exited")
+func (a *Action) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var dummy struct {
+		Title      string `yaml:"title"`
+		Execute    string `yaml:"execute"`
+		Goto       string `yaml:"goto"`
+		Collectall bool   `yaml:"collectall"`
+	}
+	if err := unmarshal(&dummy); err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	a.Title = dummy.Title
+	a.Execute = dummy.Execute
+	a.Goto = dummy.Goto
+	a.Collectall = dummy.Collectall
+	return nil
 }

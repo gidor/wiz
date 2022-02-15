@@ -19,6 +19,7 @@ package cfg
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -27,16 +28,66 @@ import (
 	goyaml "gopkg.in/yaml.v3"
 )
 
-type Cfg struct {
-	Height  float32
-	Width   float32
-	Title   string  `yaml:"title"`
-	Panels  []*Form `yaml:",flow"`
-	lasterr error
-	app     fyne.App
-	win     fyne.Window
+type Dsize struct {
+	W float32
+	H float32
 }
 
+type Cfg struct {
+	Msg            string  `yaml:"msg"`
+	Title          string  `yaml:"title"`
+	Panels         []*Form `yaml:",flow"`
+	taskentrypoint string
+	entrypoint     string
+	lasterr        error
+	height         float32
+	width          float32
+	app            fyne.App
+	win            fyne.Window
+}
+
+func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var dy struct {
+		Taskentrypoint string  `yaml:"taskfile"`
+		Minsize        Dsize   `yaml:"minsize"`
+		Msg            string  `yaml:"msg"`
+		Title          string  `yaml:"title"`
+		Panels         []*Form `yaml:",flow"`
+	}
+
+	if err := unmarshal(&dy); err != nil {
+		c.lasterr = err
+		fmt.Println(err.Error())
+		return err
+	}
+	if dy.Minsize.H > 0 {
+		c.height = dy.Minsize.H
+	} else {
+		c.height = 300
+	}
+	if dy.Minsize.W > 0 {
+		c.width = dy.Minsize.W
+	} else {
+		c.width = 400
+	}
+
+	c.Msg = dy.Msg
+	c.taskentrypoint = dy.Taskentrypoint
+	c.Title = dy.Title
+	c.Panels = dy.Panels
+	return nil
+}
+
+func (c *Cfg) Taskfile() string {
+	if filepath.IsAbs(c.taskentrypoint) {
+		return c.taskentrypoint
+	} else {
+		return filepath.Join(filepath.Dir(c.entrypoint), c.taskentrypoint)
+	}
+
+}
+
+// start showing the Configured wizard
 func (c *Cfg) Start() {
 	c.Size()
 	c.win.Show()
@@ -50,45 +101,50 @@ func max(a float32, b float32) float32 {
 	}
 	return b
 }
+
+// set window size
 func (c *Cfg) Size() {
 	size := c.win.Content().MinSize()
 	c.win.CenterOnScreen()
-	c.win.Resize(fyne.NewSize(max(c.Width, size.Width), max(c.Height, size.Height)))
+	c.win.Resize(fyne.NewSize(max(c.width, size.Width), max(c.height, size.Height)))
 }
 
 func tidyUp() {
 	fmt.Println("Exited")
 }
 
+// render the form
+func (c *Cfg) render() {
+	c.win.SetContent(widget.NewLabel(c.Msg))
+}
+
 func (c *Cfg) defaults() {
-	if c.Height == 0 {
-		c.Height = 300
-	}
-	if c.Width == 0 {
-		c.Width = 400
-	}
 	c.app = app.New()
 	c.win = c.app.NewWindow(c.Title)
 	items := make([]*fyne.MenuItem, 0, len(c.Panels)+2)
+	items = append(items, fyne.NewMenuItem("Home", c.render))
+	items = append(items, fyne.NewMenuItemSeparator())
 	for _, form := range c.Panels {
 		form.defaults(c)
 		item, err := form.MenuItem()
 		if err == nil {
 			items = append(items, item)
+		} else {
+			c.lasterr = err
 		}
 	}
 
-	//.SetContent(widget.NewLabel("Hello"))
 	items = append(items, fyne.NewMenuItemSeparator())
 	quit := fyne.NewMenuItem("Exit", func() { c.app.Quit() })
 	quit.IsQuit = true
 	items = append(items, quit)
 	todomenu := fyne.NewMenu("Todo", items...)
 	c.win.SetMainMenu(fyne.NewMainMenu(todomenu))
-	c.win.SetContent(widget.NewLabel("TODO"))
+	c.render()
 
 }
 
+//  Configuration  factory
 func GetCfg(path string) Cfg {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -102,6 +158,7 @@ func GetCfg(path string) Cfg {
 		cfg.lasterr = err
 		panic(err)
 	}
+	cfg.entrypoint = path
 	cfg.defaults()
 	return cfg
 }

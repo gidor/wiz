@@ -1,0 +1,35 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  showvars:
+    cmds:
+      - echo "{{.VARIABILE}}"
+    silent: true
+  
+  task:
+    cmds:
+      - echo "{{.dir}}"
+      - echo "{{.select}}"
+      - echo "{{.text}}"
+      - echo "{{.dir}}"
+      - echo "{{.file}} "
+
+    silent: true
+
+  selectvalue:
+    cmds:
+      - echo a_dynamic_a
+      - echo b_dynamic_b
+      - echo c_dynamic_c
+      - echo d_dynamic_d
+    silent: true

@@ -16,12 +16,15 @@ limitations under the License.
 
 package cfg
 
+// Form item type
 type TypeItem string
 
 const (
 	Text     TypeItem = "text"
 	Password TypeItem = "password"
 	File     TypeItem = "file"
+	FileOpen TypeItem = "file_open"
+	FileSave TypeItem = "file_save"
 	Dir      TypeItem = "dir"
 	Select   TypeItem = "select"
 	Execute  TypeItem = "execute"
