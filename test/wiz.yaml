@@ -82,6 +82,9 @@ panels:
       -
         name: file1
         type: file_open
+        options:
+          - '.yaml'
+          - '.yml'
         value: 
       -
         name: dir1

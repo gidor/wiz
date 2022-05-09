@@ -25,6 +25,7 @@ import (
 	"fyne.io/fyne/v2/app"
 
 	"fyne.io/fyne/v2/widget"
+	"github.com/gidor/wiz/pkg/runner"
 	goyaml "gopkg.in/yaml.v3"
 )
 
@@ -44,6 +45,9 @@ type Cfg struct {
 	width          float32
 	app            fyne.App
 	win            fyne.Window
+	dry            bool
+	verbose        runner.Verbosity
+	reload         runner.ReloadPolicy
 }
 
 func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -88,7 +92,18 @@ func (c *Cfg) Taskfile() string {
 }
 
 // start showing the Configured wizard
-func (c *Cfg) Start() {
+func (c *Cfg) Start(verbose bool, dry bool, reload bool) {
+	if verbose {
+		c.verbose = runner.Verbose
+	} else {
+		c.verbose = runner.Silent
+	}
+	c.dry = dry
+	if reload {
+		c.reload = runner.Always
+	} else {
+		c.reload = runner.Never
+	}
 	c.Size()
 	c.win.Show()
 	c.app.Run()
@@ -138,7 +153,7 @@ func (c *Cfg) defaults() {
 	quit := fyne.NewMenuItem("Exit", func() { c.app.Quit() })
 	quit.IsQuit = true
 	items = append(items, quit)
-	todomenu := fyne.NewMenu("Todo", items...)
+	todomenu := fyne.NewMenu("Procedure", items...)
 	c.win.SetMainMenu(fyne.NewMainMenu(todomenu))
 	c.render()
 

@@ -65,7 +65,6 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 	if err := unmarshal(&dy); err != nil {
 		fmt.Println(err.Error())
-
 		return err
 	}
 	i.Todo = dy.Todo
@@ -126,7 +125,7 @@ func (i *Item) defaults(c *Cfg) {
 func (i *Item) execute() {
 	if i.Todo.Execute != "" {
 		if run == nil {
-			r, err := runner.NewRunner(i.cfg.Taskfile())
+			r, err := runner.NewRunner(i.cfg.Taskfile(), i.cfg.reload, i.cfg.verbose, i.cfg.dry)
 			if err != nil {
 				fmt.Println(err.Error())
 				return
@@ -152,7 +151,7 @@ func (i *Item) execute() {
 func (i *Item) executeTo() []string {
 	if i.Todo.Execute != "" {
 		if run == nil {
-			r, err := runner.NewRunner(i.cfg.Taskfile())
+			r, err := runner.NewRunner(i.cfg.Taskfile(), i.cfg.reload, i.cfg.verbose, i.cfg.dry)
 			if err != nil {
 				fmt.Println(err.Error())
 				return nil
@@ -185,6 +184,9 @@ func (i *Item) getfs(we *widget.Entry) {
 		du, e := storage.ListerForURI(storage.NewFileURI(i.Val()))
 		if e == nil {
 			dlg.SetLocation(du)
+		}
+		if len(i.Options) > 0 {
+			dlg.SetFilter(storage.NewExtensionFileFilter(i.Options))
 		}
 		dlg.Show()
 	case FileSave:

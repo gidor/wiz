@@ -44,6 +44,8 @@ func Start() {
 		showversion bool
 		showhelp    bool
 		dry         bool
+		verbose     bool
+		reload      bool
 		dir         string
 		configpath  string
 	)
@@ -54,7 +56,11 @@ func Start() {
 	}
 
 	pflag.BoolVarP(&showversion, "version", "v", false, "show version")
-	pflag.BoolVar(&dry, "dry", false, "dso notexecute any task")
+	pflag.BoolVarP(&dry, "dry", "D", false, "do not execute any task")
+
+	pflag.BoolVarP(&verbose, "verbose", "V", false, "verbose execution")
+	pflag.BoolVarP(&reload, "reload", "r", false, "Always reload taskfile")
+
 	pflag.StringVarP(&dir, "dir", "d", "", "sets directory of execution")
 	pflag.StringVarP(&configpath, "configfile", "f", "", `choose config file. Defaults to "wiz.yaml"`)
 	pflag.BoolVarP(&showhelp, "help", "h", false, "show help")
@@ -86,6 +92,7 @@ func Start() {
 		log.Fatal(err)
 	} else {
 		cfg := cfg.GetCfg(cfgp)
-		cfg.Start()
+
+		cfg.Start(verbose, dry, reload)
 	}
 }

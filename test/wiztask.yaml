@@ -23,8 +23,7 @@ tasks:
       - echo "{{.text}}"
       - echo "{{.dir}}"
       - echo "{{.file}} "
-
-    silent: true
+    # silent: false
 
   selectvalue:
     cmds:

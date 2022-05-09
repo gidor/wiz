@@ -20,6 +20,12 @@ tasks:
   # GOARCH if targeting a different architecture
   # CGO_ENABLED=1 which tells go to enable the C compiler
   # CC environment variable to tell Go which compiler to use.
+  install:
+    deps:
+      - site:build:linux
+    cmds:
+      - sudo install {{.BIN}}/{{.CLI}} /usr/local/bin/
+  
 
   build:
     desc: build and cross compiles
