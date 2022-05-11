@@ -39,6 +39,8 @@ const (
 )
 
 type Runner struct {
+	dir          string
+	entrypoint   string
 	reloadPolicy ReloadPolicy
 	verbose      Verbosity
 	dryrun       bool
@@ -68,7 +70,7 @@ func NewRunner(taskpath string, reload ReloadPolicy, verbose Verbosity, dry bool
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 
-		OutputStyle: "", // "interleaved",
+		OutputStyle: "interleaved",
 	}
 
 	if err := executor.Setup(); err != nil {
@@ -78,6 +80,8 @@ func NewRunner(taskpath string, reload ReloadPolicy, verbose Verbosity, dry bool
 	}
 
 	re := Runner{
+		dir:          dir,
+		entrypoint:   entrypoint,
 		dryrun:       dry,
 		reloadPolicy: reload,
 		verbose:      verbose,
@@ -93,25 +97,25 @@ func (r *Runner) reload() bool {
 	// dir := filepath.Dir(r.taskpath)
 	// entrypoint := filepath.Base(r.taskpath)
 
-	// r.executor = task.Executor{
-	// 	Force:       false,
-	// 	Watch:       false,
-	// 	Verbose:     false,
-	// 	Silent:      true,
-	// 	Dir:         dir,
-	// 	Dry:         false,
-	// 	Entrypoint:  entrypoint,
-	// 	Summary:     false,
-	// 	Parallel:    false,
-	// 	Color:       false,
-	// 	Concurrency: 0,
+	r.executor = task.Executor{
+		Force:       false,
+		Watch:       false,
+		Verbose:     false,
+		Silent:      true,
+		Dir:         r.dir,
+		Dry:         false,
+		Entrypoint:  r.entrypoint,
+		Summary:     false,
+		Parallel:    false,
+		Color:       false,
+		Concurrency: 0,
 
-	// 	Stdin:  os.Stdin,
-	// 	Stdout: os.Stdout,
-	// 	Stderr: os.Stderr,
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
 
-	// 	OutputStyle: "", // "interleaved",
-	// }
+		OutputStyle: "interleaved",
+	}
 
 	if err := r.executor.Setup(); err != nil {
 		log.Print("error in setup ", r.taskpath, err)

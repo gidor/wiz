@@ -32,6 +32,7 @@ tasks:
     deps:
       - site:build:windows
       - site:build:linux
+  
 
   fmt:
     cmds:

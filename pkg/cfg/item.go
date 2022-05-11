@@ -147,7 +147,7 @@ func (i *Item) execute() {
 	}
 }
 
-// run task an get output as sing slice
+// run task an get output as string slice
 func (i *Item) executeTo() []string {
 	if i.Todo.Execute != "" {
 		if run == nil {
