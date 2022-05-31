@@ -27,6 +27,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
+	extdlg "github.com/gidor/wiz/pkg/dlg"
 	"github.com/gidor/wiz/pkg/runner"
 )
 
@@ -222,6 +223,27 @@ func (i *Item) getfs(we *widget.Entry) {
 	}
 }
 
+// open and manage dialog in order to navigate the file system
+func (i *Item) getfs_ext(we *widget.Entry) {
+	switch i.Type {
+	case File, FileOpen:
+		file, err := extdlg.DlgFile(false, i.Label, i.Val(), i.Options)
+		if err == nil {
+			we.SetText(file)
+		}
+	case FileSave:
+		file, err := extdlg.DlgFile(true, i.Label, i.Val(), i.Options)
+		if err == nil {
+			we.SetText(file)
+		}
+	case Dir:
+		file, err := extdlg.DlgDir(i.Label, i.Val())
+		if err == nil {
+			we.SetText(file)
+		}
+	}
+}
+
 // get the item value from default or from the runtime cache
 func (i *Item) Val() string {
 	val, ok := allvalues[i.Name]
@@ -266,7 +288,7 @@ func (i *Item) widgets() (fyne.CanvasObject, fyne.CanvasObject) {
 		w := widget.NewEntry()
 		w.SetText(i.Val())
 		w.OnChanged = func(val string) { i.changed(val) }
-		b := widget.NewButton("...", func() { i.getfs(w) })
+		b := widget.NewButton("...", func() { i.getfs_ext(w) })
 		// l := container.NewHBox(b, w)
 		l := container.New(layout.NewFormLayout(), b, w)
 		// l.Resize()

@@ -83,6 +83,11 @@ panels:
         name: file1
         type: file_open
         value: 
+        options:
+          - .yaml
+          - .yml
+          - .json
+
       -
         name: dir1
         type: dir
