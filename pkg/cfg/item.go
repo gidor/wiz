@@ -135,7 +135,9 @@ func (i *Item) execute() {
 				run = r
 			}
 		}
-		run.Run(i.Todo.Execute, allvalues)
+		i.cfg.ShowRunning()
+		e := run.Run(i.Todo.Execute, allvalues)
+		i.cfg.ShowFinished(e)
 		return
 	}
 	if i.Todo.Goto != "" {

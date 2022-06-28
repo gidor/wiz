@@ -24,6 +24,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	goyaml "gopkg.in/yaml.v3"
 )
@@ -45,6 +46,7 @@ type Cfg struct {
 	width          float32
 	app            fyne.App
 	win            fyne.Window
+	popUp          *widget.PopUp
 }
 
 func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -117,6 +119,45 @@ func (c *Cfg) Size() {
 
 func tidyUp() {
 	fmt.Println("Exited")
+}
+
+func (c *Cfg) ShowRunning() {
+	if c.win != nil {
+		c.popUp = widget.NewModalPopUp(
+			container.NewVBox(
+				widget.NewLabel("Running"),
+			),
+			c.win.Canvas(),
+		)
+		c.popUp.Show()
+	}
+}
+
+func (c *Cfg) ShowFinished(e error) {
+	if c.win != nil {
+		if c.popUp != nil {
+			if !c.popUp.Hidden {
+				c.popUp.Hide()
+			}
+			c.popUp = nil
+		}
+		var msg string
+		var modal *widget.PopUp
+		if e == nil {
+			msg = "Done"
+		} else {
+			msg = e.Error()
+		}
+
+		modal = widget.NewModalPopUp(
+			container.NewVBox(
+				widget.NewLabel(msg),
+				widget.NewButton("OK", func() { modal.Hide() }),
+			),
+			c.win.Canvas(),
+		)
+		modal.Show()
+	}
 }
 
 // render the form

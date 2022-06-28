@@ -75,7 +75,7 @@ func NewRunner(taskpath string) (*Runner, error) {
 	return &re, nil
 }
 
-func (r *Runner) Run(task string, params map[string]string) {
+func (r *Runner) Run(task string, params map[string]string) error {
 	e := r.executor
 	call := taskfile.Call{Task: task, Vars: &taskfile.Vars{}}
 	for k, v := range params {
@@ -84,11 +84,13 @@ func (r *Runner) Run(task string, params map[string]string) {
 	ctx := context.Background()
 	if err := e.Run(ctx, call); err != nil {
 		log.Print(err)
+		return err
 	}
+	return nil
 
 }
 
-func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) {
+func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) error {
 	e := r.executor
 	legacyout := e.Stdout
 	e.Stdout = output
@@ -99,7 +101,9 @@ func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) 
 	ctx := context.Background()
 	if err := e.Run(ctx, call); err != nil {
 		log.Print(err)
+		return err
 	}
 	e.Stdout = legacyout
+	return nil
 
 }
