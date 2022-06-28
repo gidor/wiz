@@ -13,11 +13,12 @@ import (
 func DlgFile(save bool, title string, path string, exts []string) (string, error) {
 	dlg := dialog.File()
 	dlg.Title(title)
-	dlg.Filter("All Files", "*")
 
 	for _, ext := range exts {
-		dlg.Filter("FILES "+ext, strings.TrimLeft(ext, "."))
+		dlg.Filter("Files "+ext, strings.TrimLeft(ext, "."))
 	}
+
+	dlg.Filter("All Files", "*")
 
 	if path == "" || path == "." {
 		dlg.StartDir, _ = os.Getwd()

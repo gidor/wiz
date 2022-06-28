@@ -34,6 +34,7 @@ type Dsize struct {
 }
 
 type Cfg struct {
+	Menu           string  `yaml:"menu"`
 	Msg            string  `yaml:"msg"`
 	Title          string  `yaml:"title"`
 	Panels         []*Form `yaml:",flow"`
@@ -49,6 +50,7 @@ type Cfg struct {
 func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var dy struct {
 		Taskentrypoint string  `yaml:"taskfile"`
+		Menu           string  `yaml:"menu"`
 		Minsize        Dsize   `yaml:"minsize"`
 		Msg            string  `yaml:"msg"`
 		Title          string  `yaml:"title"`
@@ -72,6 +74,10 @@ func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	c.Msg = dy.Msg
+	c.Menu = dy.Menu
+	if c.Menu == "" {
+		c.Menu = "Todo"
+	}
 	c.taskentrypoint = dy.Taskentrypoint
 	c.Title = dy.Title
 	c.Panels = dy.Panels
@@ -138,7 +144,7 @@ func (c *Cfg) defaults() {
 	quit := fyne.NewMenuItem("Exit", func() { c.app.Quit() })
 	quit.IsQuit = true
 	items = append(items, quit)
-	todomenu := fyne.NewMenu("Todo", items...)
+	todomenu := fyne.NewMenu(c.Menu, items...)
 	c.win.SetMainMenu(fyne.NewMainMenu(todomenu))
 	c.render()
 
