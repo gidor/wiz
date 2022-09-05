@@ -6,10 +6,12 @@ require (
 	fyne.io/fyne/v2 v2.1.2
 	github.com/go-task/task/v3 v3.10.0
 	github.com/spf13/pflag v1.0.5
+	github.com/sqweek/dialog v0.0.0-20220504154117-be45b268883a
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (
+	github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fredbi/uri v0.0.0-20181227131451-3dcfdacbaaf3 // indirect

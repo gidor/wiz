@@ -24,6 +24,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/gidor/wiz/pkg/runner"
 	goyaml "gopkg.in/yaml.v3"
@@ -35,6 +36,7 @@ type Dsize struct {
 }
 
 type Cfg struct {
+	Menu           string  `yaml:"menu"`
 	Msg            string  `yaml:"msg"`
 	Title          string  `yaml:"title"`
 	Panels         []*Form `yaml:",flow"`
@@ -48,11 +50,13 @@ type Cfg struct {
 	dry            bool
 	verbose        runner.Verbosity
 	reload         runner.ReloadPolicy
+	popUp          *widget.PopUp
 }
 
 func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var dy struct {
 		Taskentrypoint string  `yaml:"taskfile"`
+		Menu           string  `yaml:"menu"`
 		Minsize        Dsize   `yaml:"minsize"`
 		Msg            string  `yaml:"msg"`
 		Title          string  `yaml:"title"`
@@ -76,6 +80,10 @@ func (c *Cfg) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	c.Msg = dy.Msg
+	c.Menu = dy.Menu
+	if c.Menu == "" {
+		c.Menu = "Todo"
+	}
 	c.taskentrypoint = dy.Taskentrypoint
 	c.Title = dy.Title
 	c.Panels = dy.Panels
@@ -128,6 +136,45 @@ func tidyUp() {
 	fmt.Println("Exited")
 }
 
+func (c *Cfg) ShowRunning() {
+	if c.win != nil {
+		c.popUp = widget.NewModalPopUp(
+			container.NewVBox(
+				widget.NewLabel("Running"),
+			),
+			c.win.Canvas(),
+		)
+		c.popUp.Show()
+	}
+}
+
+func (c *Cfg) ShowFinished(e error) {
+	if c.win != nil {
+		if c.popUp != nil {
+			if !c.popUp.Hidden {
+				c.popUp.Hide()
+			}
+			c.popUp = nil
+		}
+		var msg string
+		var modal *widget.PopUp
+		if e == nil {
+			msg = "Done"
+		} else {
+			msg = e.Error()
+		}
+
+		modal = widget.NewModalPopUp(
+			container.NewVBox(
+				widget.NewLabel(msg),
+				widget.NewButton("OK", func() { modal.Hide() }),
+			),
+			c.win.Canvas(),
+		)
+		modal.Show()
+	}
+}
+
 // render the form
 func (c *Cfg) render() {
 	c.win.SetContent(widget.NewLabel(c.Msg))
@@ -153,7 +200,7 @@ func (c *Cfg) defaults() {
 	quit := fyne.NewMenuItem("Exit", func() { c.app.Quit() })
 	quit.IsQuit = true
 	items = append(items, quit)
-	todomenu := fyne.NewMenu("Procedure", items...)
+	todomenu := fyne.NewMenu(c.Menu, items...)
 	c.win.SetMainMenu(fyne.NewMainMenu(todomenu))
 	c.render()
 

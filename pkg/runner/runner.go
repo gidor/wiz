@@ -152,13 +152,15 @@ func (r *Runner) Run(task string, params map[string]string) {
 		call.Vars.Set(k, taskfile.Var{Static: v})
 	}
 	ctx := context.Background()
-	if err := exe.Run(ctx, call); err != nil {
-		log.Print("Error runing ", task, err)
+	if err := e.Run(ctx, call); err != nil {
+		log.Print(err)
+		return err
 	}
+	return nil
 
 }
 
-func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) {
+func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) error {
 	e := r.executor
 	if r.reloadPolicy == Always {
 		if !r.reload() {
@@ -178,7 +180,9 @@ func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) 
 	ctx := context.Background()
 	if err := e.Run(ctx, call); err != nil {
 		log.Print(err)
+		return err
 	}
 	e.Stdout = legacyout
+	return nil
 
 }

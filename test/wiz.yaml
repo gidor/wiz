@@ -1,6 +1,7 @@
 title: wizzard
 # taskfile: /home/goikos/repos/DataMgmt/wiz/test/wiztask.yaml
 taskfile: wiztask.yaml
+menu: Procedure
 minisize:
   w: 600
   h: 600
@@ -56,6 +57,8 @@ panels:
         name: dir
         type: dir
         value: .
+        options:
+          - .shp
       -
         name: select
         type: select
@@ -86,6 +89,11 @@ panels:
           - '.yaml'
           - '.yml'
         value: 
+        options:
+          - .yaml
+          - .yml
+          - .json
+
       -
         name: dir1
         type: dir
