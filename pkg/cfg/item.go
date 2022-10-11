@@ -51,6 +51,7 @@ type Item struct {
 	value   string   `yaml:"value"`
 	Options []string `yaml:"options,flow"`
 	Todo    Action   `yaml:"action"`
+	Dynamic bool     `yaml:"dynamic"`
 	cfg     *Cfg
 }
 
@@ -62,6 +63,7 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Type    string   `yaml:"type"`
 		Value   string   `yaml:"value"`
 		Todo    Action   `yaml:"action"`
+		Dynamic bool     `yaml:"dynamic"`
 		Options []string `yaml:"options,flow"`
 	}
 	if err := unmarshal(&dy); err != nil {
@@ -72,7 +74,7 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	i.value = dy.Value
 	i.Name = dy.Name
 	i.Label = dy.Label
-	// i.Dynamic = dy.Dynamic
+	i.Dynamic = dy.Dynamic
 	i.Options = dy.Options
 	switch dy.Type {
 	case string(Text):

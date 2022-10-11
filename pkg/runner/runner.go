@@ -25,6 +25,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-task/task/v3"
+
 	"github.com/go-task/task/v3/taskfile"
 )
 
@@ -52,32 +53,37 @@ type Runner struct {
 func NewRunner(taskpath string, reload ReloadPolicy, verbose Verbosity, dry bool) (*Runner, error) {
 	dir := filepath.Dir(taskpath)
 	entrypoint := filepath.Base(taskpath)
+	// var output taskfile.Output
+	// output.Name = "interleaved" //|group|prefixed]")
+	// output.Group.Begin = "output-group-begin"
+	// output.Group.End = "output-group-end"
 
-	executor := task.Executor{
-		Force:       false,
-		Watch:       false,
-		Verbose:     false,
-		Silent:      true,
-		Dir:         dir,
-		Dry:         false,
-		Entrypoint:  entrypoint,
-		Summary:     false,
-		Parallel:    false,
-		Color:       false,
-		Concurrency: 0,
+	// executor := task.Executor{
+	// 	Force:       false,
+	// 	Watch:       false,
+	// 	Verbose:     false,
+	// 	Silent:      true,
+	// 	Dir:         dir,
+	// 	Dry:         false,
+	// 	Entrypoint:  entrypoint,
+	// 	Summary:     false,
+	// 	Parallel:    false,
+	// 	Color:       false,
+	// 	Concurrency: 0,
 
-		Stdin:  os.Stdin,
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
+	// 	Stdin:  os.Stdin,
+	// 	Stdout: os.Stdout,
+	// 	Stderr: os.Stderr,
 
-		OutputStyle: "interleaved",
-	}
+	// 	OutputStyle: output,
+	// 	// OutputStyle: taskfile.Output{Name: "interleaved"},
+	// }
 
-	if err := executor.Setup(); err != nil {
-		log.Print("error in setup ", taskpath, err)
-		//executor.Logger.Fatal(err)
-		return nil, err
-	}
+	// if err := executor.Setup(); err != nil {
+	// 	log.Print("error in setup ", taskpath, err)
+	// 	//executor.Logger.Fatal(err)
+	// 	return nil, err
+	// }
 
 	re := Runner{
 		dir:          dir,
@@ -86,9 +92,10 @@ func NewRunner(taskpath string, reload ReloadPolicy, verbose Verbosity, dry bool
 		reloadPolicy: reload,
 		verbose:      verbose,
 		taskpath:     taskpath,
-		executor:     executor,
+		executor:     task.Executor{},
 		// taskfile: nil,
 	}
+	re.reload()
 
 	return &re, nil
 }
@@ -96,6 +103,10 @@ func NewRunner(taskpath string, reload ReloadPolicy, verbose Verbosity, dry bool
 func (r *Runner) reload() bool {
 	// dir := filepath.Dir(r.taskpath)
 	// entrypoint := filepath.Base(r.taskpath)
+	var output taskfile.Output
+	output.Name = "interleaved" //|group|prefixed]")
+	// output.Group.Begin = "output-group-begin"
+	// output.Group.End = "output-group-end"
 
 	r.executor = task.Executor{
 		Force:       false,
@@ -103,7 +114,7 @@ func (r *Runner) reload() bool {
 		Verbose:     false,
 		Silent:      true,
 		Dir:         r.dir,
-		Dry:         false,
+		Dry:         r.dryrun,
 		Entrypoint:  r.entrypoint,
 		Summary:     false,
 		Parallel:    false,
@@ -114,7 +125,7 @@ func (r *Runner) reload() bool {
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 
-		OutputStyle: "interleaved",
+		OutputStyle: output,
 	}
 
 	if err := r.executor.Setup(); err != nil {
@@ -136,15 +147,15 @@ func (r *Runner) show(task string, params map[string]string) {
 
 }
 
-func (r *Runner) Run(task string, params map[string]string) {
+func (r *Runner) Run(task string, params map[string]string) error {
 	if r.reloadPolicy == Always {
 		if !r.reload() {
-			return
+			return nil
 		}
 	}
 	r.show(task, params)
 	if r.dryrun {
-		return
+		return nil
 	}
 	exe := r.executor
 	call := taskfile.Call{Task: task, Vars: &taskfile.Vars{}}
@@ -152,7 +163,7 @@ func (r *Runner) Run(task string, params map[string]string) {
 		call.Vars.Set(k, taskfile.Var{Static: v})
 	}
 	ctx := context.Background()
-	if err := e.Run(ctx, call); err != nil {
+	if err := exe.Run(ctx, call); err != nil {
 		log.Print(err)
 		return err
 	}
@@ -163,13 +174,14 @@ func (r *Runner) Run(task string, params map[string]string) {
 func (r *Runner) RunOn(task string, output io.Writer, params map[string]string) error {
 	e := r.executor
 	if r.reloadPolicy == Always {
+		log.Print("Reloading")
 		if !r.reload() {
-			return
+			return nil
 		}
 	}
 	r.show(task, params)
 	if r.dryrun {
-		return
+		return nil
 	}
 	legacyout := e.Stdout
 	e.Stdout = output

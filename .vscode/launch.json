@@ -11,7 +11,8 @@
             "mode": "auto",
             // "program": "${fileDirname}"
             "program": "${workspaceFolder}/wiz.go",
-            "args": ["-d","test"]
+            "args": ["-r", "-v", "-f", "../etl/wiz.yaml"]
+            // "args": ["-d","test"]
         }
     ]
 }
