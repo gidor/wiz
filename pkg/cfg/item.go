@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 package cfg
 
 import (
@@ -29,6 +28,7 @@ import (
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	extdlg "github.com/gidor/wiz/pkg/dlg"
+	"github.com/gidor/wiz/pkg/event"
 	"github.com/gidor/wiz/pkg/runner"
 )
 
@@ -52,6 +52,8 @@ type Item struct {
 	value   string   `yaml:"value"`
 	Options []string `yaml:"options,flow"`
 	Todo    Action   `yaml:"action"`
+	LoadOn  string   `yaml:"loadon"`
+	widget  *widget.Select
 	cfg     *Cfg
 }
 
@@ -63,11 +65,11 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Type    string   `yaml:"type"`
 		Value   string   `yaml:"value"`
 		Todo    Action   `yaml:"action"`
+		LoadOn  string   `yaml:"loadon"`
 		Options []string `yaml:"options,flow"`
 	}
 	if err := unmarshal(&dy); err != nil {
 		fmt.Println(err.Error())
-
 		return err
 	}
 	i.Todo = dy.Todo
@@ -76,6 +78,7 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	i.Label = dy.Label
 	// i.Dynamic = dy.Dynamic
 	i.Options = dy.Options
+	i.LoadOn = dy.LoadOn
 	switch dy.Type {
 	case string(Text):
 		i.Type = Text
@@ -261,6 +264,7 @@ func (i *Item) Val() string {
 // set new val for the from item in the runtime cache
 func (i *Item) changed(val string) {
 	allvalues[i.Name] = val
+	event.Trigger(i.Name, val)
 }
 
 // get the widgets for the items to be rendered in a form layout row
@@ -344,14 +348,24 @@ func (i *Item) widgetsPassword() (fyne.CanvasObject, fyne.CanvasObject) {
 
 func (i *Item) widgetsSelect() (fyne.CanvasObject, fyne.CanvasObject) {
 	label := widget.NewLabel(i.Label)
-	if i.Options == nil || len(i.Options) == 0 {
-		i.Options = i.executeTo()
-		if i.Options == nil {
-			i.Options = make([]string, 0)
+	if i.LoadOn == "" {
+		if i.Options == nil || len(i.Options) == 0 {
+			i.Options = i.executeTo()
 		}
+	} else {
+		event.AddListener(i.LoadOn, func(s string, data ...interface{}) error {
+			i.Options = i.executeTo()
+			i.widget.Options = i.Options
+			i.widget.ClearSelected()
+			return nil
+		})
+	}
+	if i.Options == nil {
+		i.Options = make([]string, 0)
 	}
 	s := widget.NewSelect(i.Options, func(val string) { i.changed(val) })
 	s.SetSelected(i.Val())
+	i.widget = s
 	return label, s
 }
 

@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 package runner
 
 import (
@@ -37,6 +36,14 @@ type Runner struct {
 func NewRunner(taskpath string) (*Runner, error) {
 	dir := filepath.Dir(taskpath)
 	entrypoint := filepath.Base(taskpath)
+	output := taskfile.Output{}
+
+	//interleaved|group|prefixed]")
+	output.Name = "interleaved"
+	//, "output-group-begin", "", "message template to print before a task's grouped output")
+	output.Group.Begin = ""
+	//, "output-group-end", "", "message template to print after a task's grouped output")
+	output.Group.End = ""
 
 	executor := task.Executor{
 		Force:       false,
@@ -51,11 +58,10 @@ func NewRunner(taskpath string) (*Runner, error) {
 		Color:       false,
 		Concurrency: 0,
 
-		Stdin:  os.Stdin,
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-
-		OutputStyle: "", // "interleaved",
+		Stdin:       os.Stdin,
+		Stdout:      os.Stdout,
+		Stderr:      os.Stderr,
+		OutputStyle: output,
 	}
 
 	if err := executor.Setup(); err != nil {

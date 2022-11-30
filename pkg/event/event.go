@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package events
+package event
 
 import (
 	"sync"
@@ -100,6 +100,10 @@ func (d *dispatcher) trigger(event string, data ...interface{}) {
 var (
 	__disp__ dispatcher
 )
+
+func init() {
+	__disp__ = dispatcher{}
+}
 
 func AddListener(event string, listener ...Listener) {
 	__disp__.addListener(event, listener...)
