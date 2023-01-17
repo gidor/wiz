@@ -1,0 +1,107 @@
+title: Procedure
+# taskfile: /home/goikos/repos/DataMgmt/wiz/test/wiztask.yaml
+taskfile: Taskfile.yaml
+minsize:
+  w: 800
+  h: 700
+msg: |
+  Procedure di gestione 
+
+  
+
+menu: Procedure
+
+panels:
+  - title: Cambia tipo
+    form:
+      -
+        name: WDB
+        label: file sqlite
+        type: file_open
+        value: .
+        options:
+          - .db
+          - .sqlite
+          - .gpkg
+
+      - name: TABLE
+        label: tabella 
+        type: select
+        loadon: WDB
+        value: 
+        action: 
+          execute: get_tables
+
+      - name: FIELD
+        label: campo 
+        type: select
+        loadon: TABLE
+        value: 
+        action: 
+          execute: get_cols
+      - name: TYPE
+        label: tipo 
+        type: select
+        options:
+          - TEXT
+          - INTEGER
+          - REAL
+          - date
+
+        value: 
+        action: 
+          execute: get_cols
+      
+      -
+        name: lista
+        type: execute
+        action: 
+          execute: show_conn
+      
+  # - title: importa via e civico
+  #     # importa civico e via da rilievo  
+  #   form:
+  
+  #     -
+  #       name: WORKDB
+  #       label: database di lavoro
+  #       type: file_open
+  #       value: .
+  #       options:
+  #         - .db
+  #         - .sqlite
+  #     -
+  #       name: RIL 
+  #       label: geopkg di rilievo
+  #       type: file_open
+  #       value: .
+  #       options:
+  #         - .gpkg
+
+  #     -
+  #       name: Avvio
+  #       type: execute
+  #       value: 
+  #       action: 
+  #         execute: merge_ril
+      
+  # - title: Consegna
+  #   form:
+  #     -
+  #       name: SPDB
+  #       label: workdb da cui estrarre Shapefile
+  #       type: file_open
+  #       value: .
+  #       options:
+  #         - .db
+  #         - .sqlite
+
+  #     -
+  #       name: Avvio
+  #       type: execute
+  #       value: 
+  #       action: 
+  #         execute: consegna
+      
+  
+  # #json_extract(
