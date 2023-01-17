@@ -5,14 +5,14 @@ minsize:
   w: 800
   h: 700
 msg: |
-  Procedure di gestione 
+  test cascading select
 
   
 
 menu: Procedure
 
 panels:
-  - title: Cambia tipo
+  - title: test
     form:
       -
         name: WDB
@@ -57,7 +57,26 @@ panels:
         type: execute
         action: 
           execute: show_conn
-      
+  - title: test2
+    form:
+      -
+        name: WDB
+        label: file sqlite
+        type: file_open
+        value: .
+        options:
+          - .db
+          - .sqlite
+          - .gpkg
+
+      -
+        name: back
+        type: back
+        value: 
+        action: 
+          goto: test
+
+
   # - title: importa via e civico
   #     # importa civico e via da rilievo  
   #   form:
