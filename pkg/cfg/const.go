@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 package cfg
 
 // Form item type
@@ -32,4 +31,5 @@ const (
 	Cancel   TypeItem = "cancel"
 	Next     TypeItem = "next"
 	Back     TypeItem = "back"
+	Message  TypeItem = "message"
 )
