@@ -53,8 +53,8 @@ type Item struct {
 	Options []string `yaml:"options,flow"`
 	Todo    Action   `yaml:"action"`
 	LoadOn  string   `yaml:"loadon"`
-	widget  *widget.Select
-	Dynamic bool     `yaml:"dynamic"`
+	wselect *widget.Select
+	wlabel  *widget.Label
 	cfg     *Cfg
 }
 
@@ -360,8 +360,8 @@ func (i *Item) widgetsSelect() (fyne.CanvasObject, fyne.CanvasObject) {
 	} else {
 		event.AddListener(i.LoadOn, func(s string, data ...interface{}) error {
 			i.Options = i.executeTo()
-			i.widget.Options = i.Options
-			i.widget.ClearSelected()
+			i.wselect.Options = i.Options
+			i.wselect.ClearSelected()
 			return nil
 		})
 	}
@@ -370,7 +370,8 @@ func (i *Item) widgetsSelect() (fyne.CanvasObject, fyne.CanvasObject) {
 	}
 	s := widget.NewSelect(i.Options, func(val string) { i.changed(val) })
 	s.SetSelected(i.Val())
-	i.widget = s
+	i.wselect = s
+
 	return label, s
 }
 
@@ -388,6 +389,29 @@ func (i *Item) widgetsFile() (fyne.CanvasObject, fyne.CanvasObject) {
 func (i *Item) widgetsExecute() (fyne.CanvasObject, fyne.CanvasObject) {
 	label := widget.NewLabel(i.Label)
 	w := widget.NewButton(i.Todo.Title, i.execute)
+	return label, w
+
+}
+func (i *Item) widgetsMessage() (fyne.CanvasObject, fyne.CanvasObject) {
+	label := widget.NewLabel(i.Label)
+	w := widget.NewLabel(i.value)
+	i.wlabel = w
+	if i.Todo.Execute != "" {
+		if i.LoadOn == "" {
+			if i.Options == nil || len(i.Options) == 0 {
+				i.Options = i.executeTo()
+			}
+		} else {
+			event.AddListener(i.LoadOn, func(s string, data ...interface{}) error {
+				i.Options = i.executeTo()
+				i.wselect.Options = i.Options
+				i.wselect.ClearSelected()
+				return nil
+			})
+		}
+
+	}
+
 	return label, w
 
 }
