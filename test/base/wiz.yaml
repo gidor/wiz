@@ -1,0 +1,180 @@
+title: wizzard
+# taskfile: /home/goikos/repos/DataMgmt/wiz/test/wiztask.yaml
+taskfile: wiztask.yaml
+menu: Procedure
+minisize:
+  w: 600
+  h: 600
+msg: |
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+  Aenean in ornare ipsum. Praesent scelerisque cursus imperdiet. 
+  Duis scelerisque est odio, et rhoncus augue venenatis ut. 
+  Praesent sagittis neque ut mi placerat sollicitudin. 
+  Ut quis cursus sapien. Aenean sagittis, neque at vestibulum elementum, 
+  quam est sollicitudin lectus, vel ultrices velit felis eu est. 
+  Aliquam non cursus nulla, a bibendum lectus. 
+  Phasellus vehicula neque imperdiet diam tincidunt bibendum. 
+  Nam porta urna diam, vitae finibus arcu tempus quis. 
+  Duis ut magna consectetur, scelerisque mauris eget, commodo erat. 
+  Donec sem felis, dignissim eu nunc at, ornare dapibus diam. 
+  Vivamus finibus lacus vitae felis semper, nec tempus nulla malesuada. 
+  Fusce efficitur fringilla turpis, nec facilisis erat mollis sed.
+  Praesent vitae lorem id lectus auctor efficitur nec sit amet nunc.
+  Cras quis lectus consequat, efficitur tortor ac, semper sem.
+
+  Aliquam eleifend porttitor nisl, nec interdum mi sodales 
+  sit amet. In condimentum, nisi at consequat luctus, ipsum 
+  velit rutrum elit, non eleifend odio tortor at dui.
+  Proin id nisl turpis.
+  Donec ut ante augue.
+  Aenean at nunc luctus, laoreet ante sed, convallis eros.
+  In hac habitasse platea dictumst.
+  Vivamus ornare ligula sem, sit amet pellentesque nunc commodo molestie.
+  Donec cursus placerat enim vel auctor.
+  Pellentesque vestibulum mattis ligula, sed tristique elit sollicitudin nec.
+  Quisque ac enim eu velit ornare commodo.
+  Cras laoreet finibus velit, sit amet dapibus nisl ultrices at.
+  Proin tincidunt rhoncus nunc.
+  Curabitur egestas sagittis dolor eget elementum.
+  Maecenas eget ipsum gravida, posuere orci ac, dapibus justo.
+  Curabitur porttitor dui vulputate, feugiat leo eget, hendrerit velit.
+  Suspendisse posuere est neque, eu sodales quam posuere id.
+
+
+panels:
+  - title: test
+    form:
+      -
+        name: text
+        label: text
+        type: text
+        value: velit rutrum elit
+      -
+        name: file
+        type: file_save
+        value: 
+      -
+        name: dir
+        type: dir
+        value: .
+        options:
+          - .shp
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+      -
+        name: avvio
+        type: execute
+        action: 
+          execute: task
+        value: 
+      
+  - title: test1
+    form:
+      -
+        name: text1
+        label: text
+        type: text
+        value: prova
+      -
+        name: file1
+        type: file_open
+        options:
+          - '.yaml'
+          - '.yml'
+        value: 
+        options:
+          - .yaml
+          - .yml
+          - .json
+
+      -
+        name: dir1
+        type: dir
+        value: .
+      -
+        name: select1
+        type: select
+        value: 
+        action: 
+          execute: selectvalue
+      -
+        name: VIA
+        type: execute
+        value: 
+        action: 
+          execute: task
+      
+  - title: test2
+    form:
+      -
+        name: text2
+        label: text
+        type: text
+        value: prova
+      -
+        name: file2
+        type: file
+        value: 
+      -
+        name: dir2
+        type: dir
+        value: .
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+      -
+        name: back
+        type: back
+        value: 
+        action: 
+          goto: test
+      
+  - title: test3
+    form:
+      -
+        name: text
+        label: text
+        type: text
+        value: prova
+      -
+        name: testo
+        label: provas
+        type: text
+        value: prova
+      -
+        name: file
+        type: file
+        value: 
+      -
+        name: dir
+        type: dir
+        value: .
+      -
+        name: select
+        type: select
+        options: 
+          - a
+          - b
+          - c
+          - d
+        value: 
+      -
+        name: back
+        type: back
+        value: 
+        action: 
+          goto: test
+        

@@ -28,6 +28,7 @@ import (
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	extdlg "github.com/gidor/wiz/pkg/dlg"
+	"github.com/gidor/wiz/pkg/event"
 	"github.com/gidor/wiz/pkg/runner"
 )
 
@@ -51,6 +52,8 @@ type Item struct {
 	value   string   `yaml:"value"`
 	Options []string `yaml:"options,flow"`
 	Todo    Action   `yaml:"action"`
+	LoadOn  string   `yaml:"loadon"`
+	widget  *widget.Select
 	Dynamic bool     `yaml:"dynamic"`
 	cfg     *Cfg
 }
@@ -63,6 +66,7 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Type    string   `yaml:"type"`
 		Value   string   `yaml:"value"`
 		Todo    Action   `yaml:"action"`
+		LoadOn  string   `yaml:"loadon"`
 		Dynamic bool     `yaml:"dynamic"`
 		Options []string `yaml:"options,flow"`
 	}
@@ -76,6 +80,7 @@ func (i *Item) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	i.Label = dy.Label
 	i.Dynamic = dy.Dynamic
 	i.Options = dy.Options
+	i.LoadOn = dy.LoadOn
 	switch dy.Type {
 	case string(Text):
 		i.Type = Text
@@ -264,48 +269,125 @@ func (i *Item) Val() string {
 // set new val for the from item in the runtime cache
 func (i *Item) changed(val string) {
 	allvalues[i.Name] = val
+	event.Trigger(i.Name, val)
 }
 
-//get the widgets for the items to be rendered in a form layout row
+// get the widgets for the items to be rendered in a form layout row
 func (i *Item) widgets() (fyne.CanvasObject, fyne.CanvasObject) {
-	label := widget.NewLabel(i.Label)
 	switch i.Type {
 	case Text:
-		w := widget.NewEntry()
-		w.OnChanged = func(val string) { i.changed(val) }
-		w.SetText(i.Val())
-		return label, w
+		return i.widgetsText()
 	case Password:
-		w := widget.NewPasswordEntry()
-		w.OnChanged = func(val string) { i.changed(val) }
-		w.SetText(i.Val())
-		return label, w
+		return i.widgetsPassword()
 	case Select:
-		if i.Options == nil || len(i.Options) == 0 {
-			i.Options = i.executeTo()
-			if i.Options == nil {
-				i.Options = make([]string, 0)
-			}
-		}
-		s := widget.NewSelect(i.Options, func(val string) { i.changed(val) })
-		s.SetSelected(i.Val())
-		return label, s
+		return i.widgetsSelect()
 	case File, Dir, FileOpen, FileSave:
-		w := widget.NewEntry()
-		w.SetText(i.Val())
-		w.OnChanged = func(val string) { i.changed(val) }
-		b := widget.NewButton("...", func() { i.getfs_ext(w) })
-		// l := container.NewHBox(b, w)
-		l := container.New(layout.NewFormLayout(), b, w)
-		// l.Resize()
-		return label, l
+		return i.widgetsFile()
 	case Execute, Cancel, Next, Back:
-		w := widget.NewButton(i.Todo.Title, i.execute)
-		return label, w
-		// Cancel  TypeItem = "cancel"
-		// Next    TypeItem = "next"
-		// Back    TypeItem = "back"
+		return i.widgetsExecute()
 	default:
+		label := widget.NewLabel(i.Label)
 		return label, label
 	}
+}
+
+// func (i *Item) widgets() (fyne.CanvasObject, fyne.CanvasObject) {
+// 	label := widget.NewLabel(i.Label)
+// 	switch i.Type {
+// 	case Text:
+// 		w := widget.NewEntry()
+// 		w.OnChanged = func(val string) { i.changed(val) }
+// 		w.SetText(i.Val())
+// 		return label, w
+// 	case Password:
+// 		w := widget.NewPasswordEntry()
+// 		w.OnChanged = func(val string) { i.changed(val) }
+// 		w.SetText(i.Val())
+// 		return label, w
+// 	case Select:
+// 		if i.Options == nil || len(i.Options) == 0 {
+// 			i.Options = i.executeTo()
+// 			if i.Options == nil {
+// 				i.Options = make([]string, 0)
+// 			}
+// 		}
+// 		s := widget.NewSelect(i.Options, func(val string) { i.changed(val) })
+// 		s.SetSelected(i.Val())
+// 		return label, s
+// 	case File, Dir, FileOpen, FileSave:
+// 		w := widget.NewEntry()
+// 		w.SetText(i.Val())
+// 		w.OnChanged = func(val string) { i.changed(val) }
+// 		b := widget.NewButton("...", func() { i.getfs_ext(w) })
+// 		// l := container.NewHBox(b, w)
+// 		l := container.New(layout.NewFormLayout(), b, w)
+// 		// l.Resize()
+// 		return label, l
+// 	case Execute, Cancel, Next, Back:
+// 		w := widget.NewButton(i.Todo.Title, i.execute)
+// 		return label, w
+// 		// Cancel  TypeItem = "cancel"
+// 		// Next    TypeItem = "next"
+// 		// Back    TypeItem = "back"
+// 	default:
+// 		return label, label
+// 	}
+// }
+
+// get the widgets for the items to be rendered in a form layout row
+func (i *Item) widgetsText() (fyne.CanvasObject, fyne.CanvasObject) {
+	label := widget.NewLabel(i.Label)
+	w := widget.NewEntry()
+	w.OnChanged = func(val string) { i.changed(val) }
+	w.SetText(i.Val())
+	return label, w
+}
+
+func (i *Item) widgetsPassword() (fyne.CanvasObject, fyne.CanvasObject) {
+	label := widget.NewLabel(i.Label)
+	w := widget.NewPasswordEntry()
+	w.OnChanged = func(val string) { i.changed(val) }
+	w.SetText(i.Val())
+	return label, w
+}
+
+func (i *Item) widgetsSelect() (fyne.CanvasObject, fyne.CanvasObject) {
+	label := widget.NewLabel(i.Label)
+	if i.LoadOn == "" {
+		if i.Options == nil || len(i.Options) == 0 {
+			i.Options = i.executeTo()
+		}
+	} else {
+		event.AddListener(i.LoadOn, func(s string, data ...interface{}) error {
+			i.Options = i.executeTo()
+			i.widget.Options = i.Options
+			i.widget.ClearSelected()
+			return nil
+		})
+	}
+	if i.Options == nil {
+		i.Options = make([]string, 0)
+	}
+	s := widget.NewSelect(i.Options, func(val string) { i.changed(val) })
+	s.SetSelected(i.Val())
+	i.widget = s
+	return label, s
+}
+
+func (i *Item) widgetsFile() (fyne.CanvasObject, fyne.CanvasObject) {
+	label := widget.NewLabel(i.Label)
+	w := widget.NewEntry()
+	w.SetText(i.Val())
+	w.OnChanged = func(val string) { i.changed(val) }
+	b := widget.NewButton("...", func() { i.getfs_ext(w) })
+	// l := container.NewHBox(b, w)
+	l := container.New(layout.NewFormLayout(), b, w)
+	return label, l
+}
+
+func (i *Item) widgetsExecute() (fyne.CanvasObject, fyne.CanvasObject) {
+	label := widget.NewLabel(i.Label)
+	w := widget.NewButton(i.Todo.Title, i.execute)
+	return label, w
+
 }

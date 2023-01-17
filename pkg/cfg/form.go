@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 package cfg
 
 import (
@@ -24,6 +23,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"github.com/gidor/wiz/pkg/event"
 )
 
 // action:
@@ -74,6 +74,7 @@ func (f *Form) MenuItem() (*fyne.MenuItem, error) {
 
 // render the form
 func (f *Form) render() {
+	event.ClearAll()
 	objs := make([]fyne.CanvasObject, 0, (len(f.Items)+1)*2)
 	// collect form widget
 	for _, item := range f.Items {

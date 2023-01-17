@@ -53,60 +53,14 @@ type Runner struct {
 func NewRunner(taskpath string, reload ReloadPolicy, verbose Verbosity, dry bool) (*Runner, error) {
 	dir := filepath.Dir(taskpath)
 	entrypoint := filepath.Base(taskpath)
-	// var output taskfile.Output
-	// output.Name = "interleaved" //|group|prefixed]")
-	// output.Group.Begin = "output-group-begin"
-	// output.Group.End = "output-group-end"
+	output := taskfile.Output{}
 
-	// executor := task.Executor{
-	// 	Force:       false,
-	// 	Watch:       false,
-	// 	Verbose:     false,
-	// 	Silent:      true,
-	// 	Dir:         dir,
-	// 	Dry:         false,
-	// 	Entrypoint:  entrypoint,
-	// 	Summary:     false,
-	// 	Parallel:    false,
-	// 	Color:       false,
-	// 	Concurrency: 0,
-
-	// 	Stdin:  os.Stdin,
-	// 	Stdout: os.Stdout,
-	// 	Stderr: os.Stderr,
-
-	// 	OutputStyle: output,
-	// 	// OutputStyle: taskfile.Output{Name: "interleaved"},
-	// }
-
-	// if err := executor.Setup(); err != nil {
-	// 	log.Print("error in setup ", taskpath, err)
-	// 	//executor.Logger.Fatal(err)
-	// 	return nil, err
-	// }
-
-	re := Runner{
-		dir:          dir,
-		entrypoint:   entrypoint,
-		dryrun:       dry,
-		reloadPolicy: reload,
-		verbose:      verbose,
-		taskpath:     taskpath,
-		executor:     task.Executor{},
-		// taskfile: nil,
-	}
-	re.reload()
-
-	return &re, nil
-}
-
-func (r *Runner) reload() bool {
-	// dir := filepath.Dir(r.taskpath)
-	// entrypoint := filepath.Base(r.taskpath)
-	var output taskfile.Output
-	output.Name = "interleaved" //|group|prefixed]")
-	// output.Group.Begin = "output-group-begin"
-	// output.Group.End = "output-group-end"
+	//interleaved|group|prefixed]")
+	output.Name = "interleaved"
+	//, "output-group-begin", "", "message template to print before a task's grouped output")
+	output.Group.Begin = ""
+	//, "output-group-end", "", "message template to print after a task's grouped output")
+	output.Group.End = ""
 
 	r.executor = task.Executor{
 		Force:       false,
@@ -121,10 +75,9 @@ func (r *Runner) reload() bool {
 		Color:       false,
 		Concurrency: 0,
 
-		Stdin:  os.Stdin,
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-
+		Stdin:       os.Stdin,
+		Stdout:      os.Stdout,
+		Stderr:      os.Stderr,
 		OutputStyle: output,
 	}
 

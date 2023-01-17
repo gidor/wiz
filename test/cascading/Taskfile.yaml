@@ -1,0 +1,31 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  get_tables:
+    cmds:
+      # - echo sqllite {{toSlash .WDB }} "select name from sqlite_schema where type ='table';"
+      - sqlite3 {{toSlash .WDB }} "select name from sqlite_schema where type ='table';"
+  
+  get_cols:
+    cmds:
+      - sqlite3 {{toSlash .WDB }} "select name from pragma_table_info('{{ .TABLE }}');"
+  
+  get_types:
+    cmds:
+      # - sqllite {{toSlash .WDB }} select name from pragma_table_info('{{ .TABLE }}');
+      - echo INTEGER 
+      - echo REAL     
+      - echo date    
+      - echo TEXT    
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+
+
