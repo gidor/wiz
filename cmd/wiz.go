@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 package cmd
 
 import (
@@ -74,11 +73,11 @@ func Start() {
 		configpath = "wiz.yaml"
 	}
 	if dir == "" {
-		d, err := os.Getwd()
+		d, err := os.Executable()
 		if err != nil {
 			log.Println(err)
 		}
-		dir = d
+		dir = filepath.Dir(d)
 	}
 
 	cfgp := filepath.Join(dir, configpath)
