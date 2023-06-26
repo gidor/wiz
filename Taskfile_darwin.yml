@@ -1,9 +1,9 @@
 # https://taskfile.dev
 
 version: '3'
-
 includes:
   utils: ./Taskfile_utils.yml
+
 
 tasks:
   # Cross compiling with Go is designed to be simple -
@@ -14,29 +14,16 @@ tasks:
   build:
     desc: build and cross compiles
     deps:
-      - build:linux
-      - build:windows
-
-  build:linux:
-    desc: build for linux
+      - build:mac
+  
+  build:mac:
+    desc: build for build:mac
     deps:
       - utils:mkdir
     env:
-      GOOS: linux
+      GOOS: darwin
       GOARCH: amd64
-      CC: gcc
+      CC: clang
       CGO_ENABLED: 1
     cmds:
-      - go build -o {{.BIN}}/{{.CLI}}
-
-  build:windows:
-    desc: build for windows
-    deps:
-      - utils:mkdir
-    env:
-      GOOS: windows
-      GOARCH: amd64
-      CC: x86_64-w64-mingw32-gcc
-      CGO_ENABLED: 1
-    cmds:
-      - env GOOS=windows GOARCH=amd64 go build -o {{.BIN}}/{{.CLI}}.exe
+      - GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build -o {{.BIN}}/{{.CLI}}

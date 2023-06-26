@@ -1,0 +1,8 @@
+version: '3'
+
+tasks:
+  mkdir:
+    desc: make bin dir
+    run: once
+    cmds:
+      - mkdir -p {{.BIN}}

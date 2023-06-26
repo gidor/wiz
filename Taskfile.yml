@@ -24,8 +24,7 @@ tasks:
   build:
     desc: build and cross compiles
     deps:
-      - site:build:windows
-      - site:build:linux
+      - site:build
 
   fmt:
     cmds:
