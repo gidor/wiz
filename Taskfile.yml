@@ -26,6 +26,11 @@ tasks:
     deps:
       - site:build
 
+  mod:
+    desc: update mod
+    cmds:
+      - go mod tidy
+      - go mod vendor
   fmt:
     cmds:
       - gofmt -l {{.SRC}} || (gofmt -d $(SRC); exit 1)
