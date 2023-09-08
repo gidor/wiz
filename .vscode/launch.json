@@ -12,6 +12,7 @@
             // "program": "${fileDirname}"
             "program": "${workspaceFolder}/wiz.go",
             "args": ["-d","test"]
+            // "args": ["-d","test${pathSeparator}cascading"]
         }
     ]
 }

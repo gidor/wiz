@@ -73,7 +73,8 @@ func Start() {
 		configpath = "wiz.yaml"
 	}
 	if dir == "" {
-		d, err := os.Executable()
+		// d, err := os.Executable()
+		d, err := os.Getwd()
 		if err != nil {
 			log.Println(err)
 		}
