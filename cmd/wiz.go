@@ -78,7 +78,8 @@ func Start() {
 		if err != nil {
 			log.Println(err)
 		}
-		dir = filepath.Dir(d)
+		// dir = filepath.Dir(d)
+		dir = d
 	}
 
 	cfgp := filepath.Join(dir, configpath)
