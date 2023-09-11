@@ -18,11 +18,12 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	// "log"
 	"os"
 	"path/filepath"
 
 	"github.com/gidor/wiz/pkg/cfg"
+	log "github.com/gidor/wiz/pkg/logwrapper"
 
 	"github.com/spf13/pflag"
 	// "github.com/go-task/task/v3"
@@ -37,6 +38,18 @@ Options:
 `
 	version = "0.1.beta"
 )
+
+func setuplog(dir string) {
+
+	logp := filepath.Join(dir, "wiz.log")
+	logfile, err := os.OpenFile(logp, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(logfile)
+
+}
 
 func Start() {
 
@@ -81,6 +94,7 @@ func Start() {
 		// dir = filepath.Dir(d)
 		dir = d
 	}
+	setuplog(dir)
 
 	cfgp := filepath.Join(dir, configpath)
 
