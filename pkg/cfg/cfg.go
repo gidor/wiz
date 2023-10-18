@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 package cfg
 
 import (
@@ -27,6 +26,10 @@ import (
 
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+
+	// "log"
+	log "github.com/gidor/wiz/pkg/logwrapper"
+
 	goyaml "gopkg.in/yaml.v3"
 )
 
@@ -123,6 +126,7 @@ func tidyUp() {
 }
 
 func (c *Cfg) ShowRunning() {
+	log.Println("Running")
 	if c.win != nil {
 		c.popUp = widget.NewModalPopUp(
 			container.NewVBox(
@@ -149,7 +153,7 @@ func (c *Cfg) ShowFinished(e error) {
 		} else {
 			msg = e.Error()
 		}
-
+		log.Println(msg)
 		modal = widget.NewModalPopUp(
 			container.NewVBox(
 				widget.NewLabel(msg),
@@ -192,7 +196,7 @@ func (c *Cfg) defaults() {
 
 }
 
-//  Configuration  factory
+// Configuration  factory
 func GetCfg(path string) Cfg {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {

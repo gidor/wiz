@@ -42,16 +42,23 @@ func Printf(format string, v ...any) {
 }
 
 func Fatalf(format string, v ...any) {
+	Print("Fatal ")
 	Printf(format, v...)
 	os.Exit(1)
 }
 func Fatal(v ...any) {
+	Print("Fatal ")
 	Print(v...)
 	os.Exit(1)
 }
 
+func Error(v ...any) {
+	Print("ERROR ")
+	Println(v...)
+}
+
 func Running(task string, params map[string]string) {
-	msg := "Run" + task
+	msg := "Run " + task
 	for k, v := range params {
 		msg += " " + k + "=" + v
 	}
